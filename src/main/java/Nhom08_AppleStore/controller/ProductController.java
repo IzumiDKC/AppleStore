@@ -6,6 +6,9 @@ import Nhom08_AppleStore.service.ProductService;
 import Nhom08_AppleStore.service.YearManufactureService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,13 +42,22 @@ public class ProductController {
     }
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("product", new Product());
-        model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("years", yearManufactureService.getAllYearManufacture());
-        return "/products/add-product";
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
+        if (authorities.contains(new SimpleGrantedAuthority("ADMIN"))) {
+            model.addAttribute("product", new Product());
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("years", yearManufactureService.getAllYearManufacture());
+            return "/products/add-product";
+        } else {
+            System.out.println("Access Denied. User roles: " + authorities.toString());
+            return "redirect:/access-denied";
+        }
     }
     @PostMapping("/add")
     public String addProduct(@Valid Product product, BindingResult result, @RequestParam("imageUrl") MultipartFile imageUrl) {
+
         if (result.hasErrors()) {
             return "/products/add-product";
         }

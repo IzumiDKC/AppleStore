@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
 
 @Controller // Đánh dấu lớp này là một Controller trong Spring MVC.
-@RequestMapping("/")
+@RequestMapping("/admin/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -44,4 +45,12 @@ Model model) {
         userService.setDefaultRole(user.getUsername()); // Gán vai trò mặc định cho người dùng
         return "redirect:/login"; // Chuyển hướng người dùng tới trang "login"
     }
+
+    @GetMapping
+    public String listUsers(Model model) {
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin/user-list";
+    }
+
 }
