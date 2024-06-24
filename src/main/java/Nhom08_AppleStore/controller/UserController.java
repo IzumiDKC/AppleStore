@@ -71,5 +71,8 @@ public class UserController {
             return "redirect:/login?error";
         }
     }
-
+    @GetMapping("/user-manager")
+    public String userManager() {
+        return "users/user-manager";
+    }
 }

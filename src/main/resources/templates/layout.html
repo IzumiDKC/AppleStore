@@ -111,7 +111,12 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
           <a class="nav-link text-white" href="/admin/manager">
-            <i class="fas fa-cogs icon"></i>Quản Lí
+            <i class="fas fa-cogs icon"></i> Quản Lí
+          </a>
+        </li>
+        <li class="nav-item" sec:authorize="isAuthenticated()">
+          <a class="nav-link text-white" href="/user-manager">
+            <i class="fas fa-user icon"></i> Hồ Sơ
           </a>
         </li>
       </ul>
