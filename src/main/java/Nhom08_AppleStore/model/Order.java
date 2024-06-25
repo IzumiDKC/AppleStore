@@ -26,6 +26,7 @@ public class Order {
     private String eMail;
     private String note;
     private String payment;
+    private Double totalPrice;
 
     private LocalDateTime date;
 

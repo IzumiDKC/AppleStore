@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Order List</title>
+    <title>Your Orders</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,7 +47,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Order List</h1>
+    <h1>Your Orders</h1>
     <table>
         <thead>
         <tr>
@@ -55,6 +55,7 @@
             <th>Số Điện Thoại</th>
             <th>Ghi Chú</th>
             <th>Phương Thức Thanh Toán</th>
+            <th>Tổng Tiền</th>
             <th>Sản Phẩm</th>
         </tr>
         </thead>
@@ -64,6 +65,7 @@
             <td th:text="${order.phoneNumber}"></td>
             <td th:text="${order.note}"></td>
             <td th:text="${order.payment}"></td>
+            <td th:text="${order.totalPrice} + ' $'"></td>
             <td>
                 <ul>
                     <li th:each="detail : ${order.orderDetails}" th:text="${detail.product.name} + ' x ' + ${detail.quantity}"></li>

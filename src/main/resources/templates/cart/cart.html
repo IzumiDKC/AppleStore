@@ -105,7 +105,6 @@
         <tr th:each="item : ${cartItems}">
           <td th:text="${item.product.name}"></td>
           <td th:text="${item.product.price} + ' $'"></td>
-          <!--update tăng giảm số lg sp trong giỏ hàng, hiển thị số tiền sản phẩm và tổng tiền khách hàng cần thanh toán-->
           <td>
             <form th:action="@{/cart/update}" method="post" class="d-inline">
               <input type="hidden" name="productId" th:value="${item.product.id}"/>
@@ -128,7 +127,7 @@
           <a th:href="@{/cart/clear}" class="btn btn-clear text-white">Clear Cart</a>
           <a th:href="@{/order/checkout}" class="btn btn-primary">Check Out</a>
         </div>
-        <p class="total"><strong>Tổng Tiền: </strong> <span th:text="${totalPrice}"></span>$</p>
+          <p class="total"><strong>Tổng Tiền: </strong> <span th:text="${totalPrice}"></span>$</p>
         <a class="btn btn-secondary" href="/products">Add More Products</a>
       </div>
     </div>

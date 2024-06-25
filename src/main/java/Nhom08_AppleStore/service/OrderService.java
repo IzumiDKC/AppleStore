@@ -41,6 +41,8 @@ public class OrderService {
         order.setPayment(payment);
         order.setDate(LocalDateTime.now());
 
+        double totalPrice = 0;
+
         order = orderRepository.save(order);
         for (CartItem item : cartItems) {
             OrderDetail detail = new OrderDetail();
@@ -48,7 +50,11 @@ public class OrderService {
             detail.setProduct(item.getProduct());
             detail.setQuantity(item.getQuantity());
             orderDetailRepository.save(detail);
+
+            totalPrice += item.getProduct().getPrice() * item.getQuantity();
         }
+        order.setTotalPrice(totalPrice);
+        order = orderRepository.save(order);
         cartService.clearCart();
         return order;
     }
