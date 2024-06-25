@@ -77,13 +77,17 @@
         background-color: #c82333;
         border-color: #bd2130;
     }
+    .total{
+        font-size: 20px;
+        margin-left: 200px;
+    }
   </style>
 </head>
 <body>
 <section layout:fragment="content" class="container mt-3">
   <div class="card">
     <div class="card-header">
-      <h1 class="mb-4">Your Cart</h1>
+      <h1 class="mb-4 text-white" align="center">Your Cart</h1>
     </div>
     <div class="card-body">
       <div th:if="${cartItems.isEmpty()}" class="alert alert-info">Your cart is empty.</div>
@@ -101,7 +105,15 @@
         <tr th:each="item : ${cartItems}">
           <td th:text="${item.product.name}"></td>
           <td th:text="${item.product.price} + ' $'"></td>
-          <td th:text="${item.quantity}"></td>
+          <!--update tăng giảm số lg sp trong giỏ hàng, hiển thị số tiền sản phẩm và tổng tiền khách hàng cần thanh toán-->
+          <td>
+            <form th:action="@{/cart/update}" method="post" class="d-inline">
+              <input type="hidden" name="productId" th:value="${item.product.id}"/>
+              <button type="submit" name="action" value="decrease" class="btn btn-sm btn-outline-secondary">-</button>
+              <span th:text="${item.quantity}"></span>
+              <button type="submit" name="action" value="increase" class="btn btn-sm btn-outline-secondary">+</button>
+            </form>
+          </td>
           <td th:text="${item.product.price * item.quantity} + ' $'"></td>
           <td>
             <div class="btn-group" role="group" aria-label="Cart Actions">
@@ -113,9 +125,10 @@
       </table>
       <div class="mt-4 d-flex justify-content-between">
         <div>
-          <a th:href="@{/cart/clear}" class="btn btn-clear">Clear Cart</a>
+          <a th:href="@{/cart/clear}" class="btn btn-clear text-white">Clear Cart</a>
           <a th:href="@{/order/checkout}" class="btn btn-primary">Check Out</a>
         </div>
+        <p class="total"><strong>Tổng Tiền: </strong> <span th:text="${totalPrice}"></span>$</p>
         <a class="btn btn-secondary" href="/products">Add More Products</a>
       </div>
     </div>
