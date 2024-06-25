@@ -65,7 +65,9 @@
         <tr th:each="order : ${orders}">
             <td th:text="${order.id}"></td>
             <td th:text="${order.customerName}"></td>
-            <td th:text="${order.address}"></td>
+            <td>
+                <a th:href="'https://www.google.com/maps/search/?api=1&query=' + ${order.address}" target="_blank" th:text="${order.address}"></a>
+            </td>
             <td th:text="${order.phoneNumber}"></td>
             <td th:text="${order.eMail}"></td>
             <td th:text="${order.note}"></td>
