@@ -14,6 +14,8 @@ public class CartController {
     @GetMapping
     public String showCart(Model model) {
         model.addAttribute("cartItems", cartService.getCartItems());
+        //tinh tong tiền
+        model.addAttribute("totalPrice", cartService.getTotalPrice());
         return "/cart/cart";
     }
     @PostMapping("/add")
@@ -27,6 +29,18 @@ public class CartController {
         cartService.removeFromCart(productId);
         return "redirect:/cart";
     }
+
+    //update lại số lượng sản phẩm trong giỏ hàng
+    @PostMapping("/update")
+    public String updateCart(@RequestParam Long productId, @RequestParam String action) {
+        if ("increase".equals(action)) {
+            cartService.increaseQuantity(productId);
+        } else if ("decrease".equals(action)) {
+            cartService.decreaseQuantity(productId);
+        }
+        return "redirect:/cart";
+    }
+
     @GetMapping("/clear")
     public String clearCart() {
         cartService.clearCart();

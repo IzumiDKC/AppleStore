@@ -26,6 +26,33 @@ public class CartService {
     public void removeFromCart(Long productId) {
         cartItems.removeIf(item -> item.getProduct().getId().equals(productId));
     }
+
+    //tăng giảm số lg sản phẩm trong giỏ hàng và tính tổng tiền trong giỏ hàng hiện có
+    public void increaseQuantity(Long productId) {
+        for (CartItem item : cartItems) {
+            if (item.getProduct().getId().equals(productId)) {
+                item.setQuantity(item.getQuantity() + 1);
+                break;
+            }
+        }
+    }
+
+    public void decreaseQuantity(Long productId) {
+        for (CartItem item : cartItems) {
+            if (item.getProduct().getId().equals(productId)) {
+                if (item.getQuantity() > 1) {
+                    item.setQuantity(item.getQuantity() - 1);
+                }
+                break;
+            }
+        }
+    }
+    public double getTotalPrice() {
+        return cartItems.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+    }
+
     public void clearCart() {
         cartItems.clear();
     }
