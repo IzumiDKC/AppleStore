@@ -13,6 +13,9 @@
     <div class="register-container">
         <h1 class="register-title">Register</h1>
         <form th:action="@{/register}" method="post">
+            <div th:if="${errorMessage}" class="alert alert-danger justify-content-center" role="alert">
+                <p th:text="${errorMessage}" class="text-danger text-start"></p>
+            </div>
             <div th:if="${errors}" class="alert alert-danger justify-content-center" role="alert">
                 <ul>
                     <li th:each="error : ${errors}" th:text="${error}" class="text-danger text-start"></li>
@@ -25,6 +28,10 @@
             <div class="form-group mb-3">
                 <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
                 <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
+            </div>
+            <div class="form-group mb-3">
+                <label for="confirmpassword" class="form-label"><i class="fas fa-lock"></i>Confirm Password</label>
+                <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" placeholder="Enter your confirm password" oninput="validatePassword()">
             </div>
             <div class="form-group mb-3">
                 <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email</label>
@@ -83,3 +90,18 @@
         color: #007bff !important;
     }
 </style>
+    <script>
+
+        function validatePassword() {
+          var password = document.getElementById("password");
+          var confirm_password = document.getElementById("confirmpassword");
+
+          if (password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("Passwords do not match");
+          } else {
+            confirm_password.setCustomValidity("");
+          }
+        }
+        document.getElementById("confirmpassword").addEventListener("input", validatePassword);
+
+    </script>

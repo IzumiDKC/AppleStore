@@ -1,5 +1,6 @@
 package Nhom08_AppleStore.controller;
 
+import Nhom08_AppleStore.exception.UserAlreadyExistsException;
 import Nhom08_AppleStore.model.User;
 import Nhom08_AppleStore.service.UserService;
 import jakarta.validation.Valid;
@@ -45,9 +46,17 @@ public class UserController {
             model.addAttribute("errors", errors);
             return "users/register";
         }
-        userService.save(user);
+        /*userService.save(user);
         userService.setDefaultRole(user.getUsername());
-        return "redirect:/login";
+        return "redirect:/login";*/
+        try {
+            userService.save(user);
+            userService.setDefaultRole(user.getUsername());
+            return "redirect:/login";
+        } catch (UserAlreadyExistsException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "users/register";
+        }
     }
 
     @GetMapping("/admin/users")

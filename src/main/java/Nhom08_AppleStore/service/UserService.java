@@ -1,6 +1,7 @@
 package Nhom08_AppleStore.service;
 
 import Nhom08_AppleStore.Role;
+import Nhom08_AppleStore.exception.UserAlreadyExistsException;
 import Nhom08_AppleStore.model.User;
 import Nhom08_AppleStore.repository.IRoleRepository;
 import Nhom08_AppleStore.repository.IUserRepository;
@@ -26,6 +27,15 @@ public class UserService implements UserDetailsService {
     private IRoleRepository roleRepository;
     // Lưu người dùng mới vào cơ sở dữ liệu sau khi mã hóa mật khẩu.
     public void save(@NotNull User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new UserAlreadyExistsException("Username already exists");
+        }
+        if (existsByEmail(user.getEmail())) {
+            throw new UserAlreadyExistsException("Email already exists");
+        }
+        if (existsByPhone(user.getPhone())) {
+            throw new UserAlreadyExistsException("Phone number already exists");
+        }
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -59,6 +69,16 @@ public class UserService implements UserDetailsService {
     public Optional<User> findByUsername(String username) throws
             UsernameNotFoundException {
         return userRepository.findByUsername(username);
+    }
+
+    // Kiểm tra xem email đã tồn tại hay chưa.
+    public boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    // Kiểm tra xem số điện thoại đã tồn tại hay chưa.
+    public boolean existsByPhone(String phone) {
+        return userRepository.findByPhone(phone).isPresent();
     }
 
     public List<User> getAllUsers() {
