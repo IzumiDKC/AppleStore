@@ -9,6 +9,43 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <style>
+        body {
+          font-family: 'Arial', sans-serif;
+          background-color: #f0f0f0; /* Màu nền ngoài xám nhạt */
+          color: #333;
+        }
+        .container {
+          margin-top: 50px;
+        }
+        h1 {
+          margin-bottom: 30px;
+          color: #004085; /* Màu xanh biển đậm hơn */
+          text-align: center;
+          font-weight: bold;
+          position: relative;
+          font-size: 2.5em;
+        }
+        h1:after {
+          content: '';
+          width: 50px;
+          height: 4px;
+          background-color: #004085;
+          margin: 10px auto 0;
+          border-radius: 2px;
+        }
+        .table-container {
+              border-radius: 10px;
+              box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+              padding: 20px;
+              transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .table-container:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
 <th:block th:replace="~{layout::header}"></th:block>
@@ -16,31 +53,33 @@
     <h1 class="mb-4">Danh Sách Sản Phẩm</h1>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col" th:each="product : ${products}">
-            <div class="card h-100">
-                <img th:src="${product.imUrl}" class="card-img-top" alt="Product Image">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${product.name}"></h5>
-                    <p class="card-text" th:text="${product.description}"></p>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Giá: <span th:text="${product.price} + '$'"></span></li>
-                        <li class="list-group-item">Loại: <span th:text="${product.category.name}"></span></li>
-                        <li class="list-group-item">Năm Sản Xuất: <span th:text="${product.yearManufacture != null ? product.yearManufacture.year : ''}"></span></li>
-                    </ul>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <div sec:authorize="hasAuthority('ADMIN')">
-                            <a th:href="@{/products/edit/{id}(id=${product.id})}"
-                               class="btn btn-success btn-sm">Sửa</a>
-                            <a th:href="@{/products/delete/{id}(id=${product.id})}"
-                               class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc không?')">Xóa</a>
+            <div class="table-container">
+                <div class="card h-100">
+                    <img th:src="${product.imUrl}" class="card-img-top" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}"></h5>
+                        <p class="card-text" th:text="${product.description}"></p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Giá: <span th:text="${product.price} + '$'"></span></li>
+                            <li class="list-group-item">Loại: <span th:text="${product.category.name}"></span></li>
+                            <li class="list-group-item">Năm Sản Xuất: <span th:text="${product.yearManufacture != null ? product.yearManufacture.year : ''}"></span></li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between">
+                            <div sec:authorize="hasAuthority('ADMIN')">
+                                <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                                   class="btn btn-success btn-sm">Sửa</a>
+                                <a th:href="@{/products/delete/{id}(id=${product.id})}"
+                                   class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc không?')">Xóa</a>
+                            </div>
+                            <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()" class="d-flex">
+                                <input type="number" name="quantity" min="1" value="1"
+                                       class="form-control me-2" style="width: 70px;">
+                                <input type="hidden" th:value="${product.id}" name="productId"/>
+                                <button type="submit" class="btn btn-warning btn-sm">Thêm Vào Giỏ</button>
+                            </form>
                         </div>
-                        <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()" class="d-flex">
-                            <input type="number" name="quantity" min="1" value="1"
-                                   class="form-control me-2" style="width: 70px;">
-                            <input type="hidden" th:value="${product.id}" name="productId"/>
-                            <button type="submit" class="btn btn-warning btn-sm">Thêm Vào Giỏ</button>
-                        </form>
                     </div>
                 </div>
             </div>

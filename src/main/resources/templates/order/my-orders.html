@@ -5,26 +5,30 @@
     <title>Your Orders</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
         }
         .container {
             width: 80%;
             margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
             overflow: hidden;
         }
         h1 {
             text-align: center;
             color: #333;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            background: #fff;
+            margin-top: 20px;
         }
         table, th, td {
             border: 1px solid #ddd;
@@ -35,6 +39,8 @@
         }
         th {
             background-color: #f2f2f2;
+            color: #333;
+            border: 1px solid #ccc;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -42,6 +48,20 @@
         ul {
             padding-left: 20px;
             list-style-type: disc;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+            border: 1px solid #007bff;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -74,6 +94,9 @@
         </tr>
         </tbody>
     </table>
+    <div style="text-align: center;">
+        <a th:href="@{/products}" class="btn-primary">Trở về trang chủ</a> <!-- Nút Quay Về -->
+    </div>
 </div>
 </body>
 </html>
