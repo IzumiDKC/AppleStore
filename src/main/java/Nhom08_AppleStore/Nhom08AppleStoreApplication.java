@@ -10,5 +10,4 @@ public class Nhom08AppleStoreApplication {
 
 		SpringApplication.run(Nhom08AppleStoreApplication.class, args);
 	}
-
 }
