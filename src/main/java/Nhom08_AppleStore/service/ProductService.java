@@ -51,4 +51,10 @@ public class ProductService {
     public List<Product> searchProducts(String name, Long categoryId, Double minPrice, Double maxPrice) {
         return productRepository.findByNameContainingAndCategoryIdAndPriceBetween(name, categoryId, minPrice, maxPrice);
     }
+    public List<String> searchProductNames(String term) {
+        return productRepository.findByNameContainingIgnoreCase(term).stream()
+                .map(Product::getName)
+                .collect(Collectors.toList());
+    }
+
 }

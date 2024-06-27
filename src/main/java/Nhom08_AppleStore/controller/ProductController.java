@@ -39,7 +39,7 @@ public class ProductController {
     @GetMapping
     public String showProductList(@RequestParam(name = "name", required = false) String name,
                                   @RequestParam(name = "category", required = false) String category,
-                                  @RequestParam(name = "price", required = false) String price,
+                                  @RequestParam(name = "priceRange", required = false) String priceRange,
                                   Model model) {
         List<Product> products = productService.getAllProducts();
 
@@ -53,10 +53,34 @@ public class ProductController {
                     .filter(product -> product.getCategory().getName().equalsIgnoreCase(category))
                     .collect(Collectors.toList());
         }
-        if (price != null && !price.isEmpty()) {
-            products = products.stream()
-                    .filter(product -> product.getPrice() <= Double.parseDouble(price))
-                    .collect(Collectors.toList());
+        if (priceRange != null && !priceRange.isEmpty()) {
+            switch (priceRange) {
+                case "0-100":
+                    products = products.stream()
+                            .filter(product -> product.getPrice() <= 100)
+                            .collect(Collectors.toList());
+                    break;
+                case "100-200":
+                    products = products.stream()
+                            .filter(product -> product.getPrice() > 100 && product.getPrice() <= 200)
+                            .collect(Collectors.toList());
+                    break;
+                case "200-500":
+                    products = products.stream()
+                            .filter(product -> product.getPrice() > 200 && product.getPrice() <= 500)
+                            .collect(Collectors.toList());
+                    break;
+                case "500-1000":
+                    products = products.stream()
+                            .filter(product -> product.getPrice() > 500 && product.getPrice() <= 1000)
+                            .collect(Collectors.toList());
+                    break;
+                case "1000+":
+                    products = products.stream()
+                            .filter(product -> product.getPrice() > 1000)
+                            .collect(Collectors.toList());
+                    break;
+            }
         }
 
         model.addAttribute("products", products);
@@ -159,4 +183,10 @@ public class ProductController {
         model.addAttribute("categories", categoryService.getAllCategories());
         return "/products/products-list";
     }
+    @GetMapping("/searchByName")
+    @ResponseBody
+    public List<String> searchProductNames(@RequestParam("term") String term) {
+        return productService.searchProductNames(term);
+    }
+
 }

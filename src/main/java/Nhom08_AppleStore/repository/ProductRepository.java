@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByNameContainingAndCategoryIdAndPriceBetween(String name, Long categoryId, Double minPrice, Double maxPrice);
+    List<Product> findByNameContainingIgnoreCase(String name);
+
 }
