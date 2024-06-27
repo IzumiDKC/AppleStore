@@ -14,7 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ResponseEntity;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,8 +22,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @Controller
 @RequestMapping("/products")
@@ -32,17 +32,41 @@ public class ProductController {
     private ProductService productService;
     @Autowired
     private CategoryService categoryService;
-    // Display a list of all products
     @Autowired
     private YearManufactureService yearManufactureService;
+
+    // Display a list of all products
     @GetMapping
-    public String showProductList(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
+    public String showProductList(@RequestParam(name = "name", required = false) String name,
+                                  @RequestParam(name = "category", required = false) String category,
+                                  @RequestParam(name = "price", required = false) String price,
+                                  Model model) {
+        List<Product> products = productService.getAllProducts();
+
+        if (name != null && !name.isEmpty()) {
+            products = products.stream()
+                    .filter(product -> product.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (category != null && !category.isEmpty() && !category.equals("Tất cả")) {
+            products = products.stream()
+                    .filter(product -> product.getCategory().getName().equalsIgnoreCase(category))
+                    .collect(Collectors.toList());
+        }
+        if (price != null && !price.isEmpty()) {
+            products = products.stream()
+                    .filter(product -> product.getPrice() <= Double.parseDouble(price))
+                    .collect(Collectors.toList());
+        }
+
+        model.addAttribute("products", products);
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "/products/products-list";
     }
+
+    // Display add product form
     @GetMapping("/add")
     public String showAddForm(Model model) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
         if (authorities.contains(new SimpleGrantedAuthority("ADMIN"))) {
@@ -55,23 +79,23 @@ public class ProductController {
             return "redirect:/access-denied";
         }
     }
+
+    // Handle add product request
     @PostMapping("/add")
     public String addProduct(@Valid Product product, BindingResult result, @RequestParam("imageUrl") MultipartFile imageUrl) {
-
         if (result.hasErrors()) {
             return "/products/add-product";
         }
-        if(!imageUrl.isEmpty()){
+        if (!imageUrl.isEmpty()) {
             try {
-                File uploadDir=new File("src/main/resources/static/");
-                if(!uploadDir.exists()){
+                File uploadDir = new File("src/main/resources/static/images/");
+                if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
-                String image= imageUrl.getOriginalFilename();
-
-                Path imagePath=  Paths.get("src/main/resources/static/"+image);
-                Files.write( imagePath,imageUrl.getBytes());
-                product.setImUrl(imagePath.toString());
+                String image = imageUrl.getOriginalFilename();
+                Path imagePath = Paths.get("src/main/resources/static/images/" + image);
+                Files.write(imagePath, imageUrl.getBytes());
+                product.setImUrl("/images/" + image);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -79,6 +103,8 @@ public class ProductController {
         productService.addProduct(product);
         return "redirect:/products";
     }
+
+    // Display edit product form
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id)
@@ -88,23 +114,24 @@ public class ProductController {
         model.addAttribute("years", yearManufactureService.getAllYearManufacture());
         return "/products/update-product";
     }
+
+    // Handle update product request
     @PostMapping("/update/{id}")
-    public String updateProduct(@PathVariable Long id, @Valid Product product,@RequestParam("imageUrl")MultipartFile imageUrl, BindingResult result) {
+    public String updateProduct(@PathVariable Long id, @Valid Product product, @RequestParam("imageUrl") MultipartFile imageUrl, BindingResult result) {
         if (result.hasErrors()) {
             product.setId(id);
             return "/products/update-product";
         }
-        if(!imageUrl.isEmpty()){
+        if (!imageUrl.isEmpty()) {
             try {
-                File uploadDir=new File("src/main/resources/static/");
-                if(!uploadDir.exists()){
+                File uploadDir = new File("src/main/resources/static/images/");
+                if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
-                String image= imageUrl.getOriginalFilename();
-
-                Path imagePath=  Paths.get("src/main/resources/static/"+image);
-                Files.write( imagePath,imageUrl.getBytes());
-                product.setImUrl(imagePath.toString());
+                String image = imageUrl.getOriginalFilename();
+                Path imagePath = Paths.get("src/main/resources/static/images/" + image);
+                Files.write(imagePath, imageUrl.getBytes());
+                product.setImUrl("/images/" + image);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -112,19 +139,24 @@ public class ProductController {
         productService.updateProduct(product);
         return "redirect:/products";
     }
+
+    // Handle delete product request
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteProductById(id);
         return "redirect:/products";
     }
-    @GetMapping("/search")
-    @ResponseBody
-    public ResponseEntity<List<String>> searchProducts(@RequestParam("term") String term) {
-        List<String> matchedProducts = productService.getAllProducts().stream()
-                .filter(product -> product.getName().toLowerCase().contains(term.toLowerCase()))
-                .map(Product::getName)
-                .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(matchedProducts);
+    // Handle search request
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam("name") Optional<String> name,
+                                 @RequestParam("category") Optional<Long> categoryId,
+                                 @RequestParam("minPrice") Optional<Double> minPrice,
+                                 @RequestParam("maxPrice") Optional<Double> maxPrice,
+                                 Model model) {
+        List<Product> products = productService.searchProducts(name.orElse(""), categoryId.orElse(null), minPrice.orElse(null), maxPrice.orElse(null));
+        model.addAttribute("products", products);
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "/products/products-list";
     }
 }
