@@ -3,8 +3,10 @@ package Nhom08_AppleStore.service;
 import Nhom08_AppleStore.model.CartItem;
 import Nhom08_AppleStore.model.Order;
 import Nhom08_AppleStore.model.OrderDetail;
+import Nhom08_AppleStore.model.Revenue;
 import Nhom08_AppleStore.repository.OrderDetailRepository;
 import Nhom08_AppleStore.repository.OrderRepository;
+import Nhom08_AppleStore.repository.RevenueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -12,8 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,6 +29,8 @@ public class OrderService {
     private OrderDetailRepository orderDetailRepository;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private RevenueRepository revenueRepository;
     @Transactional
     public Order createOrder(String customerName, String address,String phoneNumber, String eMail, String note, String payment, List<CartItem> cartItems) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,6 +63,23 @@ public class OrderService {
         order.setTotalPrice(totalPrice);
         order = orderRepository.save(order);
         cartService.clearCart();
+
+        LocalDate orderDate = order.getDate().toLocalDate();
+        Optional<Revenue> optionalRevenue = revenueRepository.findByDate(orderDate);
+
+        if (optionalRevenue.isPresent()) {
+            Revenue revenue = optionalRevenue.get();
+            revenue.setTotalRevenue(revenue.getTotalRevenue() + order.getTotalPrice());
+            revenue.setNumberOfSales(revenue.getNumberOfSales() + 1);
+            revenueRepository.save(revenue);
+        } else {
+            Revenue newRevenue = new Revenue();
+            newRevenue.setDate(orderDate);
+            newRevenue.setTotalRevenue(order.getTotalPrice());
+            newRevenue.setNumberOfSales(1);
+            revenueRepository.save(newRevenue);
+        }
+
         return order;
     }
     public List<Order> getAllOrders() {
