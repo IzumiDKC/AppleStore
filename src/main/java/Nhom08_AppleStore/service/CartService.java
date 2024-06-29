@@ -30,6 +30,7 @@ public class CartService {
         if(!found){
             cartItems.add(new CartItem(product, quantity));
         }
+
     }
     public List<CartItem> getCartItems() {
         return cartItems;
