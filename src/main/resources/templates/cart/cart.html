@@ -127,6 +127,15 @@
           <a th:href="@{/cart/clear}" class="btn btn-clear text-white">Clear Cart</a>
           <a th:href="@{/order/checkout}" class="btn btn-primary">Check Out</a>
         </div>
+
+        <form th:action="@{/cart/apply-voucher}" method="post">
+          <div class="mb-3">
+            <label for="voucherCode" class="form-label">Nhập mã voucher:</label>
+            <input type="text" class="form-control" id="voucherCode" name="voucherCode">
+          </div>
+          <button type="submit" class="btn btn-primary">Áp dụng</button>
+        </form>
+
         <p class="total"><strong>Tổng Tiền: </strong> <span th:text="${totalPrice}"></span>$</p>
         <a class="btn btn-secondary" href="/products">Add More Products</a>
       </div>

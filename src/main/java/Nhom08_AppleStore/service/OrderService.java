@@ -1,9 +1,6 @@
 package Nhom08_AppleStore.service;
 
-import Nhom08_AppleStore.model.CartItem;
-import Nhom08_AppleStore.model.Order;
-import Nhom08_AppleStore.model.OrderDetail;
-import Nhom08_AppleStore.model.Revenue;
+import Nhom08_AppleStore.model.*;
 import Nhom08_AppleStore.repository.OrderDetailRepository;
 import Nhom08_AppleStore.repository.OrderRepository;
 import Nhom08_AppleStore.repository.RevenueRepository;
@@ -23,16 +20,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional
 public class OrderService {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
-    @Autowired
-    private CartService cartService;
-    @Autowired
-    private RevenueRepository revenueRepository;
-    @Transactional
-    public Order createOrder(String customerName, String address,String phoneNumber, String eMail, String note, String payment, List<CartItem> cartItems) {
+    private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final CartService cartService;
+    private final RevenueRepository revenueRepository;
+
+    public Order createOrder(String customerName, String address, String phoneNumber, String eMail,
+                             String note, String payment, List<CartItem> cartItems) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -51,6 +45,7 @@ public class OrderService {
         double totalPrice = 0;
 
         order = orderRepository.save(order);
+
         for (CartItem item : cartItems) {
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
@@ -60,8 +55,17 @@ public class OrderService {
 
             totalPrice += item.getProduct().getPrice() * item.getQuantity();
         }
-        order.setTotalPrice(totalPrice);
+
+        // Áp dụng giảm giá từ voucher nếu có
+        double discountedPrice = totalPrice;
+        Voucher appliedVoucher = cartService.getAppliedVoucher();
+        if (appliedVoucher != null) {
+            discountedPrice -= (discountedPrice * appliedVoucher.getDiscount() / 100);
+        }
+
+        order.setTotalPrice(discountedPrice);
         order = orderRepository.save(order);
+
         cartService.clearCart();
 
         LocalDate orderDate = order.getDate().toLocalDate();
@@ -82,6 +86,7 @@ public class OrderService {
 
         return order;
     }
+
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
@@ -89,5 +94,4 @@ public class OrderService {
     public List<Order> getOrdersByUsername(String username) {
         return orderRepository.findByUsername(username);
     }
-
 }

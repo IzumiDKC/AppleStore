@@ -67,8 +67,13 @@ public class OrderController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         List<Order> orders = orderService.getOrdersByUsername(username);
+
+
+
         System.out.println("Username: " + username);
         model.addAttribute("orders", orders);
         return "order/my-orders";
     }
+
+
 }

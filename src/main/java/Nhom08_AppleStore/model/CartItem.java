@@ -1,8 +1,12 @@
 package Nhom08_AppleStore.model;
 
+import jakarta.persistence.ManyToOne;
+
 public class CartItem {
     private Product product;
     private int quantity;
+    @ManyToOne
+    private Voucher voucher;
     // Constructors
     public CartItem(Product product, int quantity) {
         this.product = product;
@@ -21,4 +25,3 @@ public class CartItem {
         this.quantity = quantity;
     }
 }
-// ngudasdamsdksadlaso

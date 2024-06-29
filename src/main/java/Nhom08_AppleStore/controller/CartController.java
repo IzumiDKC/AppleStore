@@ -1,16 +1,25 @@
 package Nhom08_AppleStore.controller;
 
+import Nhom08_AppleStore.model.Voucher;
 import Nhom08_AppleStore.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import Nhom08_AppleStore.repository.VoucherRepository;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/cart")
 public class CartController {
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
+
+
     @GetMapping
     public String showCart(Model model) {
         model.addAttribute("cartItems", cartService.getCartItems());
@@ -46,4 +55,27 @@ public class CartController {
         cartService.clearCart();
         return "redirect:/cart";
     }
+
+    @PostMapping("/apply-voucher")
+    public String applyVoucher(@RequestParam("voucherCode") String voucherCode, Model model) {
+        // Tìm voucher từ code
+        Voucher voucher = voucherRepository.findByCode(voucherCode);
+
+        if (voucher != null) {
+            cartService.applyVoucher(voucher);
+
+            model.addAttribute("appliedVoucher", voucher);
+
+            double totalPriceAfterDiscount = cartService.getTotalPrice();
+            model.addAttribute("totalPrice", totalPriceAfterDiscount);
+
+        } else {
+            // Xử lý khi voucher không hợp lệ
+            model.addAttribute("error", "Mã voucher không hợp lệ");
+        }
+
+        return "redirect:/cart"; // Hoặc trả về template giỏ hàng
+    }
+
+
 }
