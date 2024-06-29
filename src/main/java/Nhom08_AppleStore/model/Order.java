@@ -34,5 +34,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
-
+    @ManyToOne
+    @JoinColumn(name = "revenue_id")
+    private Revenue revenue;
 }
