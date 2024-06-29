@@ -104,7 +104,6 @@ public class ProductController {
         }
     }
 
-    // Handle add product request
     @PostMapping("/add")
     public String addProduct(@Valid Product product, BindingResult result, @RequestParam("imageUrl") MultipartFile imageUrl) {
         if (result.hasErrors()) {
@@ -139,13 +138,18 @@ public class ProductController {
         return "/products/update-product";
     }
 
-    // Handle update product request
     @PostMapping("/update/{id}")
     public String updateProduct(@PathVariable Long id, @Valid Product product, @RequestParam("imageUrl") MultipartFile imageUrl, BindingResult result) {
         if (result.hasErrors()) {
             product.setId(id);
             return "/products/update-product";
         }
+
+        // Lấy sản phẩm hiện tại từ database
+        Product existingProduct = productService.getProductById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
+
+        // Nếu người dùng không tải lên hình ảnh mới, giữ lại đường dẫn hình ảnh cũ
         if (!imageUrl.isEmpty()) {
             try {
                 File uploadDir = new File("src/main/resources/static/images/");
@@ -159,10 +163,15 @@ public class ProductController {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            // Giữ lại đường dẫn hình ảnh cũ
+            product.setImUrl(existingProduct.getImUrl());
         }
+
         productService.updateProduct(product);
         return "redirect:/products";
     }
+
 
     // Handle delete product request
     @GetMapping("/delete/{id}")
