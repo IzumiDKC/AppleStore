@@ -28,8 +28,19 @@ public class Order {
     private String payment;
     private Double totalPrice;
 
+
+
     private LocalDateTime date;
 
+    private String voucherCode;
+
+    public String getVoucherCode() {
+        return voucherCode;
+    }
+
+    public void setVoucherCode(String voucherCode) {
+        this.voucherCode = voucherCode;
+    }
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;

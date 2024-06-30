@@ -23,5 +23,11 @@ public class Voucher {
     private int discount;
     private int quantity;
 
+    public void decreaseQuantity() {
+        if (this.quantity > 0) {
+            this.quantity -= 1;
+        }
+    }
+
 }
 

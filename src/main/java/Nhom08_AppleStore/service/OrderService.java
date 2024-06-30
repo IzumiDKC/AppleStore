@@ -4,8 +4,8 @@ import Nhom08_AppleStore.model.*;
 import Nhom08_AppleStore.repository.OrderDetailRepository;
 import Nhom08_AppleStore.repository.OrderRepository;
 import Nhom08_AppleStore.repository.RevenueRepository;
+import Nhom08_AppleStore.repository.VoucherRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,7 @@ public class OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final CartService cartService;
     private final RevenueRepository revenueRepository;
+    private final VoucherRepository voucherRepository;
 
     public Order createOrder(String customerName, String address, String phoneNumber, String eMail,
                              String note, String payment, List<CartItem> cartItems) {
@@ -61,6 +62,9 @@ public class OrderService {
         Voucher appliedVoucher = cartService.getAppliedVoucher();
         if (appliedVoucher != null) {
             discountedPrice -= (discountedPrice * appliedVoucher.getDiscount() / 100);
+            order.setVoucherCode(appliedVoucher.getCode()); // Lưu mã voucher vào đơn hàng
+            appliedVoucher.decreaseQuantity(); // Giảm số lượng voucher
+            voucherRepository.save(appliedVoucher); // Lưu lại voucher sau khi giảm số lượng
         }
 
         order.setTotalPrice(discountedPrice);
