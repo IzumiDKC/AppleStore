@@ -37,7 +37,7 @@
         </div>
         <div class="mb-3">
             <label for="phoneNumber" class="form-label">Số điện thoại:</label>
-            <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required>
+            <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" th:value="${phone}" readonly required>
         </div>
         <div class="mb-3">
             <label for="eMail" class="form-label">Email:</label>

@@ -62,9 +62,9 @@ public class OrderService {
         Voucher appliedVoucher = cartService.getAppliedVoucher();
         if (appliedVoucher != null) {
             discountedPrice -= (discountedPrice * appliedVoucher.getDiscount() / 100);
-            order.setVoucherCode(appliedVoucher.getCode()); // Lưu mã voucher vào đơn hàng
-            appliedVoucher.decreaseQuantity(); // Giảm số lượng voucher
-            voucherRepository.save(appliedVoucher); // Lưu lại voucher sau khi giảm số lượng
+            order.setVoucherCode(appliedVoucher.getCode()); // Lưu voucher
+            appliedVoucher.decreaseQuantity(); // Giảm  voucher
+            voucherRepository.save(appliedVoucher); // Lưu lại voucher sau khi giảm
         }
 
         order.setTotalPrice(discountedPrice);

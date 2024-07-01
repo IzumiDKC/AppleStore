@@ -56,26 +56,44 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    @PostMapping("/apply-voucher")
+   /*  @PostMapping("/apply-voucher")
     public String applyVoucher(@RequestParam("voucherCode") String voucherCode, Model model) {
-        // Tìm voucher từ code
         Voucher voucher = voucherRepository.findByCode(voucherCode);
 
-        if (voucher != null) {
+        if (voucher != null && voucher.getQuantity() > 0) {
             cartService.applyVoucher(voucher);
 
             model.addAttribute("appliedVoucher", voucher);
 
             double totalPriceAfterDiscount = cartService.getTotalPrice();
             model.addAttribute("totalPrice", totalPriceAfterDiscount);
-
         } else {
-            // Xử lý khi voucher không hợp lệ
+
             model.addAttribute("error", "Mã voucher không hợp lệ");
         }
+        return "redirect:/cart";
+    } */
 
-        return "redirect:/cart"; // Hoặc trả về template giỏ hàng
-    }
+   @PostMapping("/apply-voucher")
+   public String applyVoucher(@RequestParam("voucherCode") String voucherCode, Model model) {
+       Voucher voucher = voucherRepository.findByCode(voucherCode);
+
+       if (voucher != null) {
+           if (voucher.getQuantity() <= 0) {
+               model.addAttribute("error", "Số lượng voucher đã hết");
+           } else {
+               cartService.applyVoucher(voucher);
+
+               model.addAttribute("appliedVoucher", voucher);
+
+               double totalPriceAfterDiscount = cartService.getTotalPrice();
+               model.addAttribute("totalPrice", totalPriceAfterDiscount);
+           }
+       } else {
+           model.addAttribute("error", "Mã voucher không hợp lệ");
+       }
+       return "redirect:/cart";
+   }
 
 
 }

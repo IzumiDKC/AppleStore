@@ -35,7 +35,11 @@ public class OrderController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Optional<User> user = userService.findByUsername(username);
-        user.ifPresent(value -> model.addAttribute("email", value.getEmail()));
+        if (user.isPresent()) {
+            User currentUser = user.get();
+            model.addAttribute("email", currentUser.getEmail());
+            model.addAttribute("phone", currentUser.getPhone());
+        }
         return "/cart/checkout";
     }
 

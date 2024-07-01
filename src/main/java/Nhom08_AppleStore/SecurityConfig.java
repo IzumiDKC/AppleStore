@@ -42,7 +42,12 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register", "/error",
                                 "/products", "/cart", "/cart/**", "/profile")
                         .permitAll() // Cho phép truy cập không cần xác thực.
-                        .requestMatchers("/products/edit/**", "/admin/", "/products/add", "/products/delete", "/categories/add", "/categories/delete", "/revenues/**").hasAnyAuthority("ADMIN") // Chỉ cho phép ADMIN truy cập.
+                        .requestMatchers("/admin/**",
+                                "/products/add", "/products/edit/**", "/products/delete/**",
+                                "/categories/add","/categories/edit/**", "/categories/delete/**",
+                                "/years/add","/years/edit/** ","/years/delete/**",
+                                "/revenues/**",
+                                "/voucher/**").hasAnyAuthority("ADMIN") // Chỉ cho phép ADMIN truy cập.
                         .requestMatchers("/api/**")
                         .permitAll() // API mở cho mọi người dùng.
                         .anyRequest().authenticated() // Bất kỳ yêu cầu nào khác cần xác thực.
@@ -58,7 +63,7 @@ public class SecurityConfig {
                 formLogin(formLogin -> formLogin
                         .loginPage("/login") // Trang đăng nhập.
                         .loginProcessingUrl("/login") // URL xử lý đăng nhập.
-                        .defaultSuccessUrl("/products") // Trang sau đăng nhập thành công.
+                        .defaultSuccessUrl("/") // Trang sau đăng nhập thành công.
                         .failureUrl("/login?error") // Trang đăng nhập thất bại.
                         .permitAll()
                 ) .

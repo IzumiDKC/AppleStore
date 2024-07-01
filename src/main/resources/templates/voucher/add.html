@@ -72,8 +72,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>Voucher</h1>
-    <form th:action="@{/voucher/add}" th:object="${voucher}" method="post">
+    <h1>Thêm Voucher</h1>
+    <form th:action="@{/voucher/add}" th:object="${voucher}" method="post" onsubmit="return validateForm()">
         <div>
             <label for="code">Mã Voucher:</label>
             <div class="input-group mb-3">
@@ -102,6 +102,23 @@
             randomCode += characters.charAt(Math.floor(Math.random() * characters.length));
         }
         document.getElementById('code').value = randomCode;
+    }
+
+    function validateForm() {
+        let discount = document.getElementById('discount').value;
+        let quantity = document.getElementById('quantity').value;
+
+        if (discount < 1) {
+            alert("Chiết khấu ít nhất là 1%");
+            return false;
+        }
+
+        if (quantity < 1) {
+            alert("Số lượng ít nhất là 1");
+            return false;
+        }
+
+        return true;
     }
 </script>
 
