@@ -91,18 +91,12 @@ public class ProductController {
     // Display add product form
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
-        if (authorities.contains(new SimpleGrantedAuthority("ADMIN"))) {
             model.addAttribute("product", new Product());
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("years", yearManufactureService.getAllYearManufacture());
             return "/products/add-product";
-        } else {
-            System.out.println("Access Denied. User roles: " + authorities.toString());
-            return "redirect:/access-denied";
         }
-    }
+
 
     @PostMapping("/add")
     public String addProduct(@Valid Product product, BindingResult result, @RequestParam("imageUrl") MultipartFile imageUrl) {
