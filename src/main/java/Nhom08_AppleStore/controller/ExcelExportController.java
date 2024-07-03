@@ -1,6 +1,10 @@
 package Nhom08_AppleStore.controller;
 
+import Nhom08_AppleStore.model.Order;
+import Nhom08_AppleStore.model.Product;
 import Nhom08_AppleStore.model.User;
+import Nhom08_AppleStore.repository.OrderRepository;
+import Nhom08_AppleStore.repository.ProductRepository;
 import Nhom08_AppleStore.repository.UserRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -20,9 +24,12 @@ public class ExcelExportController {
 
     @Autowired
     private UserRepository userRepository;
-
-    @GetMapping("/export")
-    public ResponseEntity<byte[]> exportExcel() {
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @GetMapping("/export-user")
+    public ResponseEntity<byte[]> exportUser() {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Users");
 
@@ -45,6 +52,53 @@ public class ExcelExportController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment; filename=userslist.xlsx");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(outputStream.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @GetMapping("/export-order")
+    public ResponseEntity<byte[]> exportOrder() {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Order");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Username");
+            header.createCell(1).setCellValue("customerName");
+            header.createCell(2).setCellValue("phoneNumber");
+            header.createCell(3).setCellValue("eMail");
+            header.createCell(4).setCellValue("note");
+            header.createCell(5).setCellValue("payment");
+            header.createCell(6).setCellValue("totalPrice");
+            header.createCell(7).setCellValue("Voucher");
+            List<Order> orders = orderRepository.findAll();
+            List<User> users = userRepository.findAll();
+            int rowIdx = 1;
+
+                for (Order order : orders) {
+                    Row row = sheet.createRow(rowIdx++);
+                    row.createCell(0).setCellValue(order.getUsername());
+                    row.createCell(2).setCellValue(order.getPhoneNumber());
+                    row.createCell(3).setCellValue(order.getEMail());
+                    row.createCell(1).setCellValue(order.getCustomerName());
+                    row.createCell(4).setCellValue(order.getNote());
+                    row.createCell(5).setCellValue(order.getPayment());
+                    row.createCell(6).setCellValue(order.getTotalPrice());
+                    row.createCell(8).setCellValue(order.getVoucherCode());
+                }
+
+
+
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=orderslist.xlsx");
 
             return ResponseEntity.ok()
                     .headers(headers)
