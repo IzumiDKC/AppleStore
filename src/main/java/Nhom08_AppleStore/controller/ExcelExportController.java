@@ -71,10 +71,11 @@ public class ExcelExportController {
             header.createCell(1).setCellValue("customerName");
             header.createCell(2).setCellValue("phoneNumber");
             header.createCell(3).setCellValue("eMail");
-            header.createCell(4).setCellValue("note");
-            header.createCell(5).setCellValue("payment");
-            header.createCell(6).setCellValue("totalPrice");
-            header.createCell(7).setCellValue("Voucher");
+            header.createCell(4).setCellValue("adress");
+            header.createCell(5).setCellValue("note");
+            header.createCell(6).setCellValue("payment");
+            header.createCell(7).setCellValue("totalPrice");
+            header.createCell(8).setCellValue("Voucher");
             List<Order> orders = orderRepository.findAll();
             List<User> users = userRepository.findAll();
             int rowIdx = 1;
@@ -82,12 +83,13 @@ public class ExcelExportController {
                 for (Order order : orders) {
                     Row row = sheet.createRow(rowIdx++);
                     row.createCell(0).setCellValue(order.getUsername());
+                    row.createCell(1).setCellValue(order.getCustomerName());
                     row.createCell(2).setCellValue(order.getPhoneNumber());
                     row.createCell(3).setCellValue(order.getEMail());
-                    row.createCell(1).setCellValue(order.getCustomerName());
-                    row.createCell(4).setCellValue(order.getNote());
-                    row.createCell(5).setCellValue(order.getPayment());
-                    row.createCell(6).setCellValue(order.getTotalPrice());
+                    row.createCell(4).setCellValue(order.getAddress());
+                    row.createCell(5).setCellValue(order.getNote());
+                    row.createCell(6).setCellValue(order.getPayment());
+                    row.createCell(7).setCellValue(order.getTotalPrice());
                     row.createCell(8).setCellValue(order.getVoucherCode());
                 }
 
