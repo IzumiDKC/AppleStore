@@ -57,6 +57,7 @@
             <th>Ghi Chú</th>
             <th>Phương Thức Thanh Toán</th>
             <th>Tổng Tiền</th>
+            <th>Trạng Thái Đơn Hàng</th>
             <th>Sản Phẩm</th>
         </tr>
         </thead>
@@ -67,6 +68,7 @@
             <td th:text="${order.note}"></td>
             <td th:text="${order.payment}"></td>
             <td th:text="${order.totalPrice} + ' $'"></td>
+            <td th:text="${order.status}"></td> <!-- Display order status -->
             <td>
                 <ul>
                     <li th:each="detail : ${order.orderDetails}" th:text="${detail.product.name} + ' x ' + ${detail.quantity}"></li>

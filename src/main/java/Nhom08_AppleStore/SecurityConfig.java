@@ -66,7 +66,12 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/") // Trang sau đăng nhập thành công.
                         .failureUrl("/login?error") // Trang đăng nhập thất bại.
                         .permitAll()
-                ) .
+                )
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/")
+                        .failureUrl("/login?error")
+                ).
                 rememberMe(rememberMe -> rememberMe
                         .key("hutech")
                         .rememberMeCookieName("hutech")

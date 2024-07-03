@@ -98,4 +98,16 @@ public class OrderService {
     public List<Order> getOrdersByUsername(String username) {
         return orderRepository.findByUsername(username);
     }
+
+    public Order updateOrderStatus(Long orderId, String newStatus) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setStatus(newStatus); // Cập nhật trạng thái mới
+            return orderRepository.save(order); // Lưu vào cơ sở dữ liệu
+        } else {
+            throw new RuntimeException("Không tìm thấy đơn hàng với id: " + orderId);
+        }
+    }
+
 }

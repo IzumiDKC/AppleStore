@@ -28,7 +28,7 @@ public class Order {
     private String payment;
     private Double totalPrice;
 
-
+    private String status;
 
     private LocalDateTime date;
 
